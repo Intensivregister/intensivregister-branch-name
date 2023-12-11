@@ -23,3 +23,6 @@ runs:
       shell: bash
       if: github.event_name == 'pull_request'
       run: echo "IMAGE_TAG=PR-${{ github.event.number }}" >> $GITHUB_ENV
+    - name: set output
+      shell: bash
+      run: echo "image-name=${{ env.IMAGE_TAG }} >> $GITHUB_OUTPUT
