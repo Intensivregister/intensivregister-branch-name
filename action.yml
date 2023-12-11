@@ -4,7 +4,7 @@ description: 'Compute the image name based on the current HEAD (branch, PR, tag)
 outputs:
   image-name:
     description: "Name of image"
-    value: ${{ env.IMAGE_TAG }}
+    value: ${{ steps.image-name-outputter.outputs.image-name }}
 runs:
   using: "composite"
   steps:
@@ -25,4 +25,5 @@ runs:
       run: echo "IMAGE_TAG=PR-${{ github.event.number }}" >> $GITHUB_ENV
     - name: set output
       shell: bash
+      id: image-name-outputter
       run: echo "image-name=${{ env.IMAGE_TAG }} >> $GITHUB_OUTPUT
