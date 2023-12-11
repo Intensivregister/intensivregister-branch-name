@@ -1,0 +1,25 @@
+name: 'intensivregister-branch-name'
+description: 'Compute the image name based on the current HEAD (branch, PR, tag)'
+
+outputs:
+  image-name:
+    description: "Name of image"
+    value: ${{ env.IMAGE_TAG }}
+runs:
+  using: "composite"
+  steps:
+    - name: Get branch name
+      id: branch-name
+      uses: tj-actions/branch-names@v8
+    - name: Set Image Tag in case of pushes/merges to master
+      shell: bash
+      if: github.event_name != 'pull_request' && steps.branch-name.outputs.is_tag == 'false'
+      run: echo "IMAGE_TAG=${{ steps.branch-name.outputs.current_branch }}" >> $GITHUB_ENV
+    - name: Set Image Tag in case of tags
+      shell: bash
+      if: github.event_name != 'pull_request' && steps.branch-name.outputs.is_tag == 'true'
+      run: echo "IMAGE_TAG=${{ steps.branch-name.outputs.tag }}" >> $GITHUB_ENV
+    - name: Set Image Tag for PR
+      shell: bash
+      if: github.event_name == 'pull_request'
+      run: echo "IMAGE_TAG=PR-${{ github.event.number }}" >> $GITHUB_ENV
